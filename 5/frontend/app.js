@@ -258,7 +258,7 @@ function showToast(msg){
 }
 
 /* ========== API & Data Handling ========== */
-const API_BASE_URL = 'https://maritime-w76k.onrender.com'; // Use empty string for relative paths
+const API_BASE_URL = 'https://maritime-new-backend.onrender.com'; // Use empty string for relative paths
 let SHIPS_CACHE = [];
 let SENSORS_CACHE = [];
 let TANK_TYPES_CACHE = [];
