@@ -842,50 +842,38 @@ async function initShipPage() {
   // ✅ Fetch permits and render the table
   const permitsRaw = await fetchPermitsForShip(currentShip.id);
   renderPermitSummary(normalizePermits(permitsRaw));
+  
+// poll every 2s for fresh values + live sensors
+window.__shipPoll && clearInterval(window.__shipPoll);
+window.__shipPoll = setInterval(async () => {
+  try {
+    // Re-fetch all ships to get the latest status and high-level readings
+    const res = await fetch(`${API_BASE_URL}/api/ships`);
+    const ships = await res.json();
+    const updated = ships.find(s => s.id === currentShip.id);
 
-  // --- MERGED CHANGE: SIMULATED DATA POLL ---
-  window.__shipPoll && clearInterval(window.__shipPoll);
-  window.__shipPoll = setInterval(async () => {
-    // Ensure the cache has data
-    if (EXTERNAL_READINGS_CACHE.length === 0) {
-      return; // Wait for data to be fetched
-    }
-
-    try {
-      // Get the next reading from the cache
-      const rawReading = EXTERNAL_READINGS_CACHE[liveReadingIndex];
-
-      // Map the raw sensor data to our application's format
-      const mappedValues = {
-          H2S: rawReading.sensor1,
-          CO:  rawReading.sensor2,
-          O2:  rawReading.sensor3,
-          LEL: rawReading.sensor4,
-      };
-
-      // Create a "live" data structure to feed into your render functions
-      const live = {
-        sensors: { 'SN-G-001': mappedValues },
-        aggregates: { display: mappedValues } // Use the same values for the main KPIs
-      };
-
-      // Update the UI with the simulated data
-      renderTankSensorsLive(live.sensors);
-      currentShip.live_o2  = live.aggregates?.display?.O2;
-      currentShip.live_co  = live.aggregates?.display?.CO;
-      currentShip.live_lel = live.aggregates?.display?.LEL;
-      currentShip.live_h2s = live.aggregates?.display?.H2S;
-
+    if (updated) {
+      currentShip = updated;
+      // If a tank is selected, fetch its specific live sensor data
+      if (currentTankId != null) {
+        try {
+          const live = await fetchTankLive(currentShip.id, currentTankId);
+          renderTankSensorsLive(live.sensors);
+          // Update main KPIs from the tank's aggregate data
+          currentShip.live_o2  = live.aggregates?.display?.O2  ?? currentShip.live_o2;
+          currentShip.live_co  = live.aggregates?.display?.CO  ?? currentShip.live_co;
+          currentShip.live_lel = live.aggregates?.display?.LEL ?? currentShip.live_lel;
+          currentShip.live_h2s = live.aggregates?.display?.H2S ?? currentShip.live_h2s;
+        } catch(e) { /* keep last visuals if live fetch fails */ }
+      }
       renderShipKPIsWithThresholds(currentShip);
-
-      // Increment and wrap the index to loop through the cached data
-      liveReadingIndex = (liveReadingIndex + 1) % EXTERNAL_READINGS_CACHE.length;
-
-    } catch (e) {
-      console.warn('Error in ship page polling loop:', e);
+      // Refresh sparkline charts occasionally
+      if (currentTankId != null) { updateSparks(currentShip.id, currentTankId); }
     }
-  }, 2000); // The interval remains 2 seconds
-
+  } catch (e) {
+    console.warn('Ship poll failed', e);
+  }
+}, 2000);
   window.addEventListener('beforeunload', () => {
     window.__shipPoll && clearInterval(window.__shipPoll);
   });
