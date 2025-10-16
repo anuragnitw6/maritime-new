@@ -592,3 +592,85 @@ body.theme-dark .data-table tbody tr:hover{ background:#19324a; }
 
 .summary-note{ font-size: 12px; margin-top: 8px; }
 
+
+body.theme-dark .sensor {
+    background-color: var(--panel);   /* matches dark panel color */
+    color: var(--text);                /* light text */
+    border: 1px solid var(--border);   /* subtle border */
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-1);
+}
+body.theme-dark .sensor-top {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+    color: var(--text);
+}
+body.theme-dark .sensor-val {
+    color: var(--text);
+    margin: 2px 0;
+}
+body.theme-dark .sensor-meta {
+    color: var(--muted);
+    font-size: 0.9em;
+}
+
+body.theme-dark .bat-fill {
+    background-color: var(--ok); /* battery green fill */
+}
+
+body.theme-dark .sig-bar {
+    background-color: var(--blue); /* signal bars */
+}
+/* Dark theme tank buttons */
+body.theme-dark #tankNav .tankbtn {
+    background-color: var(--panel);    /* dark panel */
+    color: var(--text);                 /* light text */
+    border: 1px solid var(--border);    /* subtle border */
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    margin: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+}
+
+/* Hover effect */
+body.theme-dark #tankNav .tankbtn:hover {
+    background-color: var(--panel-2);
+    box-shadow: var(--shadow-2);
+}
+
+/* Delete button styling */
+body.theme-dark #tankNav .tankbtn .btn-delete {
+    background-color: transparent;
+    color: var(--danger);
+    border: none;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+body.theme-dark #tankNav .tankbtn .btn-delete:hover {
+    color: #ff7878;
+}
+.theme-dark .nav {
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #333;
+}
+
+.theme-dark .nav a {
+  color: #e0e0e0;
+}
+
+.theme-dark .nav a:hover,
+.theme-dark .nav a.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.theme-dark #themeToggle {
+  color: #e0e0e0;
+  border-color: #444;
+}
